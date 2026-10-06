@@ -13,8 +13,8 @@ __kernel void matrix_04_multiply_via_local_memory(
                                 unsigned int h,
                                 unsigned int k)
 {
-    __local float a_piece[16][16];
-    __local float b_piece[16][16];
+    __local float a_piece[16][17];
+    __local float b_piece[16][17];
     uint x = get_global_id(0), y = get_global_id(1);
     if (x < w && y < h) {
         uint x_local = get_local_id(0), y_local = get_local_id(1);
