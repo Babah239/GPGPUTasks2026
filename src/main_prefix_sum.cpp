@@ -42,7 +42,7 @@ void run(int argc, char** argv)
     avk2::KernelSource vk_prefix_accumulation(avk2::getPrefixSum02PrefixAccumulation());
 
     unsigned int n = 100 * 1000 * 1000, pow2_min = 1<<27, pow2=27;
-    unsigned int compression = 6;
+    unsigned int compression = 5;
     std::vector<unsigned int> as(n, 0);
     size_t total_sum = 0;
     for (size_t i = 0; i < n; ++i) {
