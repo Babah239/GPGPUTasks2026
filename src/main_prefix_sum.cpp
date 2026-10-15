@@ -42,7 +42,7 @@ void run(int argc, char** argv)
     avk2::KernelSource vk_prefix_accumulation(avk2::getPrefixSum02PrefixAccumulation());
 
     unsigned int n = 100 * 1000 * 1000, pow2_min = 1<<27, pow2=27;
-    unsigned int compression = 4;
+    unsigned int compression = 6;
     std::vector<unsigned int> as(n, 0);
     size_t total_sum = 0;
     for (size_t i = 0; i < n; ++i) {
@@ -123,6 +123,8 @@ void run(int argc, char** argv)
 
     // Сверяем результат
     for (size_t i = 0; i < n; ++i) {
+        //if (cpu_prefix_sum[i] != gpu_prefix_sum[i])
+          //  std::cout << i <<' ';
         rassert(cpu_prefix_sum[i] == gpu_prefix_sum[i], 566324523452323, cpu_prefix_sum[i], gpu_prefix_sum[i], i);
     }
 

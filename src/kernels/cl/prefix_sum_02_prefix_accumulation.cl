@@ -21,16 +21,25 @@ __kernel void prefix_sum_02_prefix_accumulation(
     for (uint i = 5 + compression; i < pow2; ++i)
         if ((x0 + 1) & (1 << i))
             sum1 += pow2_sum[(1 << pow2 - i) + (x0 + 1 >> i) - 1];
+    uint sum3 = 0;
     for (uint work_item = 0; work_item < (1 << compression); ++work_item) {
         uint x = x0 + 32 * work_item-1;
-        uint sum2 = 0;
         if (x < n) {
-            for (uint i = 1; i < 5 + compression; ++i)
+            uint sum2 = 0;
+            for (uint i = 1; i < 5; ++i)
                 if ((x + 1) & (1 << i))
                     sum2 += pow2_sum[(1 << pow2 - i) + (x + 1 >> i) - 1];
             if ((x + 1) & 1)
                 sum2 += input[x];
-            prefix_sum_accum[x] = sum1+sum2;
+            if (work_item!=0)
+            for (uint i = 5; i < 5 + compression; ++i)
+                if ((x + 1>>5) % (1 << i-5) == 0) {
+                        if ((x + 1) & (1 << i))
+                            sum3 += pow2_sum[(1 << pow2 - i) + (x + 1 >> i) - 1];
+                        else
+                            sum3 -= pow2_sum[(1 << pow2 - i) + (x + 1 >> i) - 2];
+                }
+            prefix_sum_accum[x] = sum1+sum2+sum3;
         }
     }
 }
