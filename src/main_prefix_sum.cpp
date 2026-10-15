@@ -42,6 +42,7 @@ void run(int argc, char** argv)
     avk2::KernelSource vk_prefix_accumulation(avk2::getPrefixSum02PrefixAccumulation());
 
     unsigned int n = 100 * 1000 * 1000, pow2_min = 1<<27, pow2=27;
+    unsigned int compression = 4;
     std::vector<unsigned int> as(n, 0);
     size_t total_sum = 0;
     for (size_t i = 0; i < n; ++i) {
@@ -90,7 +91,7 @@ void run(int argc, char** argv)
                 curr_pow2_min /= 2;
                 curr_n /= 2;
             }
-            ocl_prefix_accumulation.exec(gpu::WorkSize(32, n), buffer_pow2_sum_gpu, input_gpu, prefix_sum_accum_gpu, n, pow2);
+            ocl_prefix_accumulation.exec(gpu::WorkSize(32, n/(1<<compression)+1), buffer_pow2_sum_gpu, input_gpu, prefix_sum_accum_gpu, n, pow2, compression);
         } else if (context.type() == gpu::Context::TypeCUDA) {
             // TODO
             throw std::runtime_error(CODE_IS_NOT_IMPLEMENTED);
