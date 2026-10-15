@@ -25,12 +25,8 @@ __kernel void prefix_sum_02_prefix_accumulation(
     for (uint work_item = 0; work_item < (1 << compression); ++work_item) {
         uint x = x0 + 32 * work_item-1;
         if (x < n) {
-            uint sum2 = 0;
-            for (uint i = 1; i < 5; ++i)
-                if ((x + 1) & (1 << i))
-                    sum2 += pow2_sum[(1 << pow2 - i) + (x + 1 >> i) - 1];
-            if ((x + 1) & 1)
-                sum2 += input[x];
+            uint element=input[x];
+            uint sum2=work_group_scan_inclusive_add(element);
             if (work_item!=0)
             for (uint i = 5; i < 5 + compression; ++i)
                 if ((x + 1>>5) % (1 << i-5) == 0) {
