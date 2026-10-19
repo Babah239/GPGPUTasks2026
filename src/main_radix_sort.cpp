@@ -37,7 +37,7 @@ void run(int argc, char** argv)
 
     FastRandom r;
 
-    int n =4*1000*1000; 
+    int n =100*1000*1000; 
     std::vector<unsigned int> debug;
     unsigned int n1 = n / GROUP_SIZE * 16, pow2_min = (1 << 27) / GROUP_SIZE * 16, pow2=27-LOG_GROUP_SIZE+4;
     int max_value = std::numeric_limits<int>::max(); 
