@@ -37,10 +37,11 @@ __kernel void radix_sort_04_scatter(
     }
     uint b = bitonic_sort[l_id];
     __local uint edges[16];
-    edges[0] = 0;
+    if (l_id == 0)
+        edges[bitonic_sort[l_id] >> 10] = 0;
     if (l_id != GROUP_SIZE - 1)
         if ((b >> 10) != (bitonic_sort[l_id + 1] >> 10))
-            edges[(b >> 10)+1] = l_id+1;
+            edges[bitonic_sort[l_id + 1] >> 10] = l_id+1;
     barrier(CLK_LOCAL_MEM_FENCE);
     uint shift = l_id - edges[b >> 10];
     uint target;
@@ -53,5 +54,9 @@ __kernel void radix_sort_04_scatter(
     uint value = input_local[b % GROUP_SIZE];
     value = (value >> 4) + ((value % 16 )<< 28);
     //if (g_id<256)
+    if (target >= n) {
+        printf("OOB: g_id=%u target=%u key=%u shift=%u part_sum=%u\n", g_id, target, b >> 10, shift, part_sum[g_id / GROUP_SIZE * 16 + (b >> 10) - 16]);
+        return;
+    }
     output[target] = value;
 }

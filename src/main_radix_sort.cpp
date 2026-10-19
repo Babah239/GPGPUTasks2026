@@ -79,21 +79,18 @@ void run(int argc, char** argv)
     gpu::gpu_mem_32u input_gpu(n),current_array1(n), current_array2(n);
     gpu::gpu_mem_32u compressed_input(n1), prefix_sum_input(n1), prefix_sum_output(n1), buffer_pow2_sum_gpu(pow2_min), part_prefix_sum(n1), scatter_input(n1);
 
-    // Прогружаем входные данные по PCI-E шине: CPU RAM -> GPU VRAM
-    input_gpu.writeN(as.data(), n);
-    // Советую занулить (или еще лучше - заполнить какой-то уникальной константой, например 255) все буферы
-    // В некоторых случаях это ускоряет отладку, но обратите внимание, что fill реализован через копию множества нулей по PCI-E, то есть он очень медленный
-    // Если вам нужно занулять буферы в процессе вычислений - используйте кернел который это сделает (см. кернел fill_buffer_with_zeros)
 
-    // Запускаем кернел (несколько раз и с замером времени выполнения)
+    input_gpu.writeN(as.data(), n);
+
     std::vector<double> times;
-    for (int iter = 0; iter < 10; ++iter) { // TODO при отладке запускайте одну итерацию
+    for (int iter = 0; iter < 10; ++iter) { 
         timer t;
 
       
         if (context.type() == gpu::Context::TypeOpenCL) {
             for (int i = 0; i < 8; ++i) {
-                ocl_fillBufferWithZeros.exec(gpu::WorkSize(GROUP_SIZE_X, n), compressed_input, n1);
+
+                ocl_fillBufferWithZeros.exec(gpu::WorkSize(GROUP_SIZE_X, n1), compressed_input, n1);
                 ocl_radixSort01LocalCounting.exec(gpu::WorkSize(GROUP_SIZE_X, n), i == 0 ? input_gpu : (i%2==1 ? current_array1 : current_array2), compressed_input);
                 ocl_matrix02TransposeCoalescedViaLocalMemory.exec(gpu::WorkSize(GROUP_SIZE_X, GROUP_SIZE_Y,16, n / GROUP_SIZE), compressed_input, prefix_sum_input, 16,n / GROUP_SIZE);
                 unsigned int compression = 5;

@@ -11,7 +11,7 @@ __kernel void matrix_02_transpose_coalesced_via_local_memory(
                                 unsigned int w,
                                 unsigned int h)
 {
-    __local float data[GROUP_SIZE_X][GROUP_SIZE_Y];
+    __local uint data[GROUP_SIZE_X][GROUP_SIZE_Y];
     uint x = get_global_id(0), y = get_global_id(1);
     uint x_local = get_local_id(0), y_local =get_local_id(1);
     if (x < w && y < h) {
